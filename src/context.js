@@ -1,7 +1,7 @@
 import React,{ createContext, useState } from "react";
 
-const appURL = "http://localhost:3030/";
-// const appURL = "https://pwdrest.herokuapp.com/";
+// const appURL = "http://localhost:3030/";
+const appURL = "https://pwdrest.herokuapp.com/";
 
 const authToken = localStorage.getItem("token")
 
