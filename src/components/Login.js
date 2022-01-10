@@ -4,8 +4,7 @@ import { Formik, Form } from "formik";
 import { TextField } from "./common/TextField";
 import * as Yup from "yup";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { Short } from "../context";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -50,35 +49,35 @@ function Login() {
     }
   };
 
-  const loginup = () => {
-    console.log('login:', login)
-    axios
-      .post(`${data.appURL}user/login`, login)
-      .then((res) => {
-        if(res.data.token){
-          setLogin(initial)
-          localStorage.setItem('token', res.data.token)
-          setData({...data,authToken:res.data.token}) 
-          navigate("/")
-        } else {
-          showUp(res.data.message)
-        }
-      })
-      .catch((err) => {
-        console.log('err:', err)
-        const {response : {data : {message}}} = err
-        showUp(message);
-      });
-  };
+
 
   useEffect(() => {
+
+    const loginup = () => {
+      axios
+        .post(`${data.appURL}user/login`, login)
+        .then((res) => {
+          if(res.data.token){
+            setLogin(initial)
+            localStorage.setItem('token', res.data.token)
+            setData({...data,authToken:res.data.token}) 
+            navigate("/")
+          } else {
+            showUp(res.data.message)
+          }
+        })
+        .catch((err) => {
+          const {response : {data : {message}}} = err
+          showUp(message);
+        });
+    };
+
     const { email, password } = login;
     if (email && password) return loginup();
   }, [login]);
 
   return (
     <div className="container mt-5 py-4">
-      <ToastContainer />
       <Formik
         initialValues={initial}
         validationSchema={validate}

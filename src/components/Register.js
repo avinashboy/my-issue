@@ -4,8 +4,7 @@ import { Formik, Form } from "formik";
 import { TextField } from "./common/TextField";
 import * as Yup from "yup";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import {  toast } from "react-toastify";
 import { Short } from "../context";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -44,28 +43,26 @@ function Register() {
     }
   };
 
-  const registerup = () => {
-    axios
-      .post(`${data.appURL}user/register`, register)
-      .then((res) => {
-        setRegister(initial);
-        showUp(res.data.message, true);
-        setTimeout(() => {
-          navigate("/login");
-        }, 3000);
-      })
-      .catch((err) => {
-        console.log("err:", err);
-        const {
-          response: {
-            data: { message },
-          },
-        } = err;
-        showUp(message);
-      });
-  };
-
   useEffect(() => {
+    const registerup = () => {
+      axios
+        .post(`${data.appURL}user/register`, register)
+        .then((res) => {
+          setRegister(initial);
+          showUp(res.data.message, true);
+          setTimeout(() => {
+            navigate("/login");
+          }, 3000);
+        })
+        .catch((err) => {
+          const {
+            response: {
+              data: { message },
+            },
+          } = err;
+          showUp(message);
+        });
+    };
     const { email, username } = register;
     if (email && username) return registerup();
   }, [register]);
@@ -75,8 +72,7 @@ function Register() {
     username: Yup.string().required("user name is required"),
   });
   return (
-    <div className="container mt-5 py-4">
-      <ToastContainer />
+    <div className='container mt-5 py-4'>
       <Formik
         initialValues={initial}
         validationSchema={validate}
@@ -90,18 +86,18 @@ function Register() {
       >
         {(formik) => (
           <div>
-            <h1 className="">Register</h1>
+            <h1 className=''>Register</h1>
             <Form>
-              <TextField label="User Name" name="username" type="text" />
-              <TextField label="Email" name="email" type="text" />
-              <Row className="mt-5">
-                <Col md={12} className="d-flex justify-content-between">
-                  <Button variant="primary" type="submit">
+              <TextField label='User Name' name='username' type='text' />
+              <TextField label='Email' name='email' type='text' />
+              <Row className='mt-5'>
+                <Col md={12} className='d-flex justify-content-between'>
+                  <Button variant='primary' type='submit'>
                     Submit
                   </Button>
                   <span>
                     Already registered User?{" "}
-                    <Link className="no_link" to="/login">
+                    <Link className='no_link' to='/login'>
                       Login
                     </Link>
                   </span>

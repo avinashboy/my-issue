@@ -39,7 +39,7 @@
 }
 
 .showme{
-border: 2px solid red;
+border: 2px solid transparent;
 }
 
 .border_box {

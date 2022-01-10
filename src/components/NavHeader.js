@@ -5,7 +5,6 @@ import { Short } from "../context";
 
 function NavHeader() {
   const { data, setData } = useContext(Short);
-  console.log("authToken:", data.authToken);
   const [state, setState] = useState({ authToken: data.authToken });
 
   const clearToken = () => {
@@ -15,7 +14,6 @@ function NavHeader() {
   };
 
   useEffect(() => {
-    console.log("authToken:", data.authToken);
     setState({ authToken: data.authToken });
   }, [data.authToken]);
   return (

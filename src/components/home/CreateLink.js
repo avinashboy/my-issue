@@ -5,21 +5,19 @@ import { TextField } from "../common/TextField";
 import * as Yup from "yup";
 import axios from "axios";
 import { Short } from "../../context";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import {  toast } from "react-toastify";
 
 const initial = {
   fullUrl: "",
 };
 
-function CreateLink({getListLink}) {
+function CreateLink({ getListLink }) {
   const [url, setUrl] = useState(initial);
-  console.log("url:", url);
+
   const [show, setShow] = useState(false);
-  const { data, setData } = useContext(Short);
+  const { data } = useContext(Short);
 
   const showUp = (message, isError = false) => {
-    console.log('message:', message)
     if (isError) {
       toast.success(message, {
         position: "top-right",
@@ -43,26 +41,27 @@ function CreateLink({getListLink}) {
     }
   };
 
-  const createShortLink = async () => {
-    const headers = { Authorization: `Bearer ${data.authToken}` };
-    await axios
-      .post(`${data.appURL}short`, url, { headers })
-      .then((res) => {
-        if (res.status === 201 && res.statusText === "Created")
-          return showUp(res.data.message, true), setUrl(initial),getListLink();
-      })
-      .catch((err) => {
-        const {
-          response: {
-            data: { message },
-          },
-        } = err;
-        showUp(message);
-        console.log("message:", message);
-      });
-  };
-
   useEffect(() => {
+    const createShortLink = async () => {
+      const headers = { Authorization: `Bearer ${data.authToken}` };
+      await axios
+        .post(`${data.appURL}short`, url, { headers })
+        .then((res) => {
+          if (res.status === 201 && res.statusText === "Created")
+            return (
+              showUp(res.data.message, true), setUrl(initial), getListLink()
+            );
+        })
+        .catch((err) => {
+          const {
+            response: {
+              data: { message },
+            },
+          } = err;
+          showUp(message);
+        });
+    };
+
     if (url.fullUrl) return createShortLink();
   }, [url.fullUrl]);
 
@@ -79,7 +78,6 @@ function CreateLink({getListLink}) {
   const handleShow = () => setShow(true);
   return (
     <Col className='showme d-flex flex-row-reverse' xs lg='2'>
-      <ToastContainer />
       <Button variant='primary' onClick={handleShow}>
         Add
       </Button>

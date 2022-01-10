@@ -1,22 +1,19 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Short } from "../context";
 import AuthChecking from "./common/AuthChecking";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { Button, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
 const axios = require("axios");
 const moment = require("moment");
 
 function Profile() {
   const [profile, setProfile] = useState({});
-  console.log("profile:", profile);
-  const navigate = useNavigate();
   const [show, setShow] = useState(false);
 
- 
+  const navigate = useNavigate();
 
-  const { data } = useContext(Short);
+  const { data, setData } = useContext(Short);
 
   const showUp = (message, isError = false) => {
     if (isError) {
@@ -42,40 +39,22 @@ function Profile() {
     }
   };
 
-  const getProfile = async () => {
-    const headers = { Authorization: `Bearer ${data.authToken}` };
-    await axios
-      .get(`${data.appURL}user/profile`, { headers })
-      .then((res) => {
-        setProfile({ ...res.data });
-      })
-      .catch((err) => {
-        console.log("err:", err);
-        const {
-          response: {
-            data: { message },
-          },
-        } = err;
-        showUp(message);
-        console.log("message:", message);
-      });
-  };
-
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   const deleteMyAccount = async () => {
-    
     const headers = { Authorization: `Bearer ${data.authToken}` };
     await axios
       .delete(`${data.appURL}user`, { headers })
       .then((res) => {
-        handleClose()
-        if("Successful Deleted" === res.data.message) showUp(res.data.message, true);
-        showUp(res.data.message);
-        // setTimeout(() => {
-        //   navigate("/login");
-        // }, 5000);
+        handleClose();
+        if ("Successful Deleted" === res.data.message)
+          showUp(res.data.message, true);
+          localStorage.clear();
+          setData({ ...data, authToken: null });
+        setTimeout(() => {
+          navigate("/login");
+        }, 5000);
       })
       .catch((err) => {
         const {
@@ -88,6 +67,23 @@ function Profile() {
   };
 
   useEffect(() => {
+    const getProfile = async () => {
+      const headers = { Authorization: `Bearer ${data.authToken}` };
+      await axios
+        .get(`${data.appURL}user/profile`, { headers })
+        .then((res) => {
+          setProfile({ ...res.data });
+        })
+        .catch((err) => {
+          const {
+            response: {
+              data: { message },
+            },
+          } = err;
+          showUp(message);
+        });
+    };
+
     getProfile();
   }, []);
 
@@ -97,7 +93,6 @@ function Profile() {
 
   return (
     <>
-      <ToastContainer />
       <AuthChecking />
       <div className='container py-5'>
         <div className='jumbotron jumbotron-fluid'>

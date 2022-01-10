@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import AuthChecking from "./common/AuthChecking";
 import Analytics from "./home/Analytics";
@@ -6,14 +6,30 @@ import CreateLink from "./home/CreateLink";
 import ListData from "./home/ListData";
 import { Short } from "../context";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 function Home() {
-  const [getId,setGetId] = useState("")
-  console.log('getId:', getId)
+  const [getId, setGetId] = useState("");
 
   const { data, setData } = useContext(Short);
+
+  const getListLink = async () => {
+    const headers = { Authorization: `Bearer ${data.authToken}` };
+    await axios
+      .get(`${data.appURL}short`, { headers })
+      .then((res) => {
+        if(res.data.length <= 0) return false
+        setGetId(res?.data[0].id);
+        setData({ ...data, linksInfo: res.data });
+      })
+      .catch((err) => {
+        showUp("something went wrong");
+      });
+  };
+
+  useEffect(() => {
+    getListLink();
+  }, []);
 
   const showUp = (message, isError = false) => {
     if (isError) {
@@ -39,29 +55,8 @@ function Home() {
     }
   };
 
-  const getListLink = async ()=>{
-    const headers = { Authorization: `Bearer ${data.authToken}` };
-    await axios
-      .get(`${data.appURL}short`, { headers })
-      .then((res) => {
-        console.log('res:', res)
-        setData({...data, linksInfo:res.data})
-      })
-      .catch((err) => {
-        showUp("something went wrong");
-      });
-  }
-
-  // const memoAnalytics = useMemo(()=>{return <Analytics />}, [getId])
-
-  useEffect(()=>{
-    getListLink()
-  },[])
-
-
   return (
     <>
-    <ToastContainer/>
       <AuthChecking />
       <Container fluid className='mt-5'>
         <Row className='d-flex justify-content-center'>
@@ -72,10 +67,10 @@ function Home() {
         </Row>
         <Container className='mt-5 show_list_link mb-5 '>
           <div className='showme scroll show_list_link_info flex-inner p-2'>
-            <ListData setGetId={setGetId}/>
+            <ListData setGetId={setGetId} />
           </div>
           <div className='showme flex-inner p-2'>
-            <Analytics id={getId}/>
+            <Analytics id={getId} setGetId={setGetId} />
           </div>
         </Container>
       </Container>

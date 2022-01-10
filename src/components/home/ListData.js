@@ -5,9 +5,10 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 
 function ListData({ setGetId }) {
   const { data } = useContext(Short);
+  if(data.linksInfo.length === 0) return "No link"
+ 
   return data.linksInfo.map(
     (link, key) => (
-      console.log("link:", link),
       (
         <div
           className=''
